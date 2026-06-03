@@ -5,134 +5,160 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LLMwiki · 知识索引</title>
     <style>
-        :root {
-            --bg: #faf9f7;
-            --fg: #2c2c2c;
-            --muted: #6b6b6b;
-            --border: #e4e2dd;
-            --accent: #8b5cf6;
-            --accent-light: #ede9fe;
-            --card: #ffffff;
-        }
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #1a1a1a;
-                --fg: #e8e6e3;
-                --muted: #999;
-                --border: #333;
-                --accent: #a78bfa;
-                --accent-light: #2d2a3d;
-                --card: #222;
-            }
-        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-            background: var(--bg);
-            color: var(--fg);
+            background: #fdf6ee;
+            color: #2c2c2c;
             line-height: 1.7;
             padding: 2rem 1rem;
         }
-        .container { max-width: 880px; margin: 0 auto; }
+        .container { max-width: 960px; margin: 0 auto; }
         header {
             text-align: center;
-            padding: 3rem 0 2rem;
-            border-bottom: 1px solid var(--border);
+            padding: 2.5rem 0 2rem;
+            border-bottom: 2px solid #f0d5b8;
             margin-bottom: 2rem;
         }
-        header h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; }
-        header p { color: var(--muted); margin-top: 0.5rem; font-size: 0.95rem; }
-        .stats { margin-top: 0.8rem; font-size: 0.85rem; color: var(--muted); }
-        .section {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
+        header h1 { font-size: 2.2rem; font-weight: 700; color: #8b5cf6; }
+        header p { color: #a0765a; margin-top: 0.4rem; font-size: 0.9rem; }
+
+        /* ======= 网格视图 ======= */
+        #gridView { display: block; }
+        #gridView.hidden { display: none; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 0.75rem;
             margin-bottom: 1rem;
-            overflow: hidden;
         }
-        .section-header {
+        .card {
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            padding: 1rem 1.2rem;
+            justify-content: center;
             cursor: pointer;
             user-select: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            padding: 0.7rem;
+            text-align: center;
+            color: #4a3728;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(150, 100, 50, 0.12);
+        }
+        .card:active { transform: scale(0.96); }
+        .card .emoji { font-size: 1.3rem; margin-bottom: 0.2rem; }
+        .card .name { font-size: 0.85rem; font-weight: 600; line-height: 1.3; }
+        .card .count {
+            font-size: 0.7rem;
+            background: rgba(255,255,255,0.5);
+            padding: 0.05rem 0.45rem;
+            border-radius: 99px;
+            margin-top: 0.15rem;
+        }
+
+        .warm-1  { background: #fef3c7; }  .warm-2  { background: #ffedd5; }
+        .warm-3  { background: #fed7aa; }  .warm-4  { background: #fde68a; }
+        .warm-5  { background: #fce7f3; }  .warm-6  { background: #fef2f2; }
+        .warm-7  { background: #fff3e0; }  .warm-8  { background: #fce4ec; }
+        .warm-9  { background: #fff8e1; }  .warm-10 { background: #fbe9e7; }
+        .warm-11 { background: #fff9c4; }  .warm-12 { background: #ffccbc; }
+        .warm-13 { background: #ffe0b2; }  .warm-14 { background: #f8bbd0; }
+        .warm-15 { background: #ffecb3; }
+
+        /* ======= 详情页视图 ======= */
+        #detailView { display: none; }
+        #detailView.visible { display: block; }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: none;
+            border: 1px solid #e0c8b0;
+            border-radius: 8px;
+            padding: 0.4rem 1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #7a5a40;
+            margin-bottom: 1.5rem;
             transition: background 0.15s;
         }
-        .section-header:hover { background: var(--accent-light); }
-        .section-header h2 {
-            font-size: 1.05rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .back-btn:hover { background: #f0e0d0; }
+
+        .detail-header {
+            margin-bottom: 1.5rem;
         }
-        .section-header .count {
-            font-size: 0.75rem;
-            background: var(--accent-light);
-            color: var(--accent);
-            padding: 0.1rem 0.5rem;
-            border-radius: 99px;
-            font-weight: 500;
+        .detail-header h2 {
+            font-size: 1.5rem;
+            color: #6b4a2e;
         }
-        .section-header .arrow {
-            transition: transform 0.2s;
-            font-size: 0.8rem;
-            color: var(--muted);
+        .detail-header .sub {
+            color: #a0765a;
+            font-size: 0.9rem;
         }
-        .section-header .arrow.open { transform: rotate(180deg); }
-        .section-body {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
+
+        .detail-list { list-style: none; }
+        .detail-list li {
+            background: #fffaf2;
+            border: 1px solid #f0d5b8;
+            border-radius: 8px;
+            padding: 0.7rem 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
         }
-        .section-body.open { max-height: 5000px; }
-        .section-body ul {
-            list-style: none;
-            padding: 0 1.2rem 1rem;
-        }
-        .section-body li {
-            padding: 0.4rem 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.92rem;
-        }
-        .section-body li:last-child { border-bottom: none; }
-        .section-body li .desc {
-            color: var(--muted);
+        .detail-list li .desc {
+            color: #a0765a;
             font-size: 0.85rem;
             margin-left: 0.3rem;
         }
-        .tag {
-            display: inline-block;
-            font-size: 0.7rem;
-            padding: 0.05rem 0.4rem;
-            border-radius: 4px;
-            background: var(--accent-light);
-            color: var(--accent);
-            margin-right: 0.3rem;
+        .detail-list li:hover {
+            background: #fff5ea;
+            border-color: #e0c0a0;
         }
+
         footer {
             text-align: center;
             padding: 3rem 0 1rem;
-            color: var(--muted);
+            color: #a0765a;
             font-size: 0.85rem;
         }
-        footer a { color: var(--accent); text-decoration: none; }
+        footer a { color: #8b5cf6; text-decoration: none; }
+
         @media (max-width: 600px) {
-            body { padding: 1rem 0.5rem; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.5rem; }
             header h1 { font-size: 1.6rem; }
         }
     </style>
 </head>
 <body>
 <div class="container">
+
+    <!-- 顶栏 -->
     <header>
-        <h1>📖 LLMwiki</h1>
-        <p>知识索引 · 2026-06-03</p>
-        <div class="stats">共 15 个专题 · 150+ 条目</div>
+        <h1>&#x1F4D6; LLMwiki</h1>
+        <p>知识索引 · 已上线部署 2026-06-03</p>
     </header>
 
-    <div id="app"></div>
+    <!-- ====== 网格视图 ====== -->
+    <div id="gridView">
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <!-- ====== 详情页视图 ====== -->
+    <div id="detailView">
+        <button class="back-btn" onclick="showGrid()">&#x2190; 返回索引</button>
+        <div class="detail-header">
+            <h2 id="detailTitle"></h2>
+            <div class="sub" id="detailSub"></div>
+        </div>
+        <ul class="detail-list" id="detailList"></ul>
+    </div>
 
     <footer>
         由 <a href="https://claude.ai" target="_blank">Claude Code</a> 生成 ·
@@ -142,287 +168,160 @@
 
 <script>
 const data = [
-  {
-    name: "西方哲学",
-    count: 12,
-    items: [
-      "做一个清醒的现代人——刘擎的思想地图 — 世俗时代的困境、清醒=看透+不逃避",
-      "不疯魔不哲学——哲学家的思想关系网 — 哲学家对话史、建构-危机-突围",
-      "中国哲学简史——冯友兰的境界说 — 四重境界、哲学代替宗教",
-      "大问题——简明哲学导论 — 概念框架、五大领域",
-      "寻觅意义——王德峰的意义哲学 — 意义是副产品、感性大我",
-      "感性的大我——王德峰与现代性出路 — 理性大我破产、感性共通体",
-      "感性与理性的辩证关系 — 从柏拉图分裂到辩证和解",
-      "美学是什么——从鲍姆加通到现代 — 感性认识、无利害的愉悦",
-      "西方哲学史讲演录——赵林 — 哲学无定论、概念逻辑演进",
-      "量子物理如何改变世界——罗韦利 — 关系本体论、现实即关系",
-      "西方现代性的精神谱系——走向理性 — 宗教改革→康德方案",
-      "人生的智慧——叔本华的幸福哲学 — 要么孤独要么庸俗"
-    ]
-  },
-  {
-    name: "文明比较",
-    count: 25,
-    items: [
-      "枢纽——施展的中国史框架 — 三轮大循环、三元空间",
-      "中国近代史——蒋廷黻的变局与出路 — 三千年变局、三层学习",
-      "极简欧洲史——欧洲文明三元素 — 三元素混合、权力分裂产生创新",
-      "万古江河——许倬云的文化融合史 — 江河式融合、征服者被征服",
-      "中国人的历史——申赋渔的神话三部曲 — 神话即历史、诸神足迹",
-      "产业与文明——张笑宇的产缘政治 — 产缘政治、复杂社会、四力汇流",
-      "人类与大地母亲——汤因比的生态史观 — 两栖动物、生物圈",
-      "技术与文明——张笑宇的技术史观 — 技术第一推动力、非中立性",
-      "智人之上——赫拉利的信息网络史 — 信息即权力、故事即凝聚力",
-      "AI文明史——张笑宇的社会工程学 — 社会工程学、四力汇流",
-      "商贸与文明——现代世界的诞生 — 商贸秩序vs暴力秩序",
-      "历代经济变革得失——吴晓波的经济周期律 — 四大集团博弈",
-      "耶路撒冷三千年 — 三教共源、层叠之城",
-      "傅说——上古第一圣人 — 版筑宰相、三宝秘传",
-      "千面英雄——坎贝尔的单一神话 — 启程→启蒙→回归",
-      "晓松奇谈——用八卦讲历史 — 八卦即入口",
-      "重走——西南联大的精神之旅 — 步行即理解",
-      "西学三书——赵林的西方文明三书 — 三对矛盾、正反合",
-      "去自然化框架——西方文明的解构与出路 — 四次去自然化",
-      "历史学是什么——历史的认识论 — 一切历史都是当代史",
-      "一球一转看世界——世界杯里的文明地图 — 旗帜即历史",
-      "人际与天机——中国式的伦理与真理 — 人际vs天机",
-      "古代天学 — 天学即政治、授时即授命",
-      "历史碎片 — 为什么是中国、一盘散沙到民族国家",
-      "枢纽——施展的中国史框架"
-    ]
-  },
-  {
-    name: "国际秩序",
-    count: 2,
-    items: [
-      "世界秩序——基辛格的三大文明观 — 威斯特伐利亚/天下/乌玛",
-      "论中国——基辛格的中国观察 — 围棋思维、天下观、修昔底德陷阱"
-    ]
-  },
-  {
-    name: "政治法律",
-    count: 5,
-    items: [
-      "论美国的民主——托克维尔的刹车系统 — 多数暴政、三道刹车",
-      "成文法与判例法——混合法之路 — 发明法律vs发现法律",
-      "国有资源资产化——三资改革 — 资源→资产→资金",
-      "法治的细节——罗翔的法律随笔 — 苏格拉底悖论、混合法",
-      "共和制与联邦制辨析 — 二维矩阵、专制作为历史中介"
-    ]
-  },
-  {
-    name: "宗教",
-    count: 36,
-    items: [
-      "三大宗教核心对比 — 信我得救vs服从得救vs自修得救",
-      "净土宗教程 — 五宗次第、真空→愿力→妙有",
-      "原本大学微言——南怀瑾 — 内明外用、修身枢纽",
-      "印度佛教史 — 沙门运动、佛陀对婆罗门的颠覆",
-      "印度教——五瑜伽与超越之路 — 五路径、超越知识之上的智慧",
-      "周易——从占卜到哲学 — 卦画→经传",
-      "告别娑婆——奇迹课程的觉醒 — 娑婆即梦、宽恕即觉醒",
-      "因果的真相——空性之路 — 因果镜、邪曲觉知",
-      "地藏菩萨本愿经讲记——净空法师 — 地狱不空誓不成佛",
-      "如何修正佛法——南怀瑾 — 见地/修证/行愿",
-      "天国之门——赵林 — 超越的浪漫、唯灵主义的自我毁灭",
-      "宗教经验之种种——威廉·詹姆斯 — 健全心态vs病态灵魂",
-      "宗教与科学——罗素 — 权威vs观察",
-      "了凡四训——度阴山 — 命自我立、改过三层",
-      "悉达多——黑塞的求道之旅 — 觉悟不能教",
-      "楞严经——南怀瑾解读 — 七处征心、五十阴魔",
-      "汇宗录——衮三的佛教哲学 — 非宗教非哲学、三个世界",
-      "无量寿经——净空法师的净土精华 — 深入经藏",
-      "齐善鸿讲道德经——六步证道 — 六步成型、玄德",
-      "西藏生死书——中阴与临终关怀 — 中阴、临终即机会",
-      "金刚经——张庆祥讲心法 — 无相=不攀附气机",
-      "心经——张庆祥讲观自在 — 观自在=观胸中气机实相",
-      "论语——张庆祥讲学而时习 — 时=气机起伏当下",
-      "中庸——张庆祥讲诚与中道 — 诚=成己成人",
-      "道德经——张庆祥讲道与德 — 道=气、德=利人利己",
-      "传习录——张庆祥讲知行合一 — 知行在内心同步",
-      "尚书——张庆祥讲十六字心法 — 人心惟危道心惟微",
-      "般若正观略讲——南怀瑾 — 观→照",
-      "药师经的济世观——南怀瑾 — 佛是大医王",
-      "庄子——傅佩荣讲超越与后现代 — 先破后立",
-      "道德经——傅佩荣讲存在与虚无 — 存在虚无主义",
-      "黄帝阴符经 — 观天之道执天之行",
-      "道家密宗与东方神秘学——南怀瑾 — 东西方比较",
-      "易经系传别讲——南怀瑾 — 寂然不动感而遂通",
-      "了凡生意经——智然 — 信心=能量、利他=高能量",
-      "观音法门——南怀瑾 — 耳根圆通、入流亡所"
-    ]
-  },
-  {
-    name: "技术工具",
-    count: 1,
-    items: [
+  { emoji: "&#x1F31F;", name: "西方哲学", count: 12, items: [
+      "做一个清醒的现代人 — 刘擎的思想地图",
+      "不疯魔不哲学 — 哲学家的思想关系网",
+      "中国哲学简史 — 冯友兰的境界说",
+      "大问题 — 简明哲学导论", "寻觅意义 — 王德峰的意义哲学",
+      "感性的大我 — 王德峰与现代性出路",
+      "感性与理性的辩证关系 — 从柏拉图到辩证和解",
+      "美学是什么 — 从鲍姆加通到现代",
+      "西方哲学史讲演录 — 赵林",
+      "量子物理如何改变世界 — 罗韦利",
+      "西方现代性的精神谱系 — 走向理性",
+      "人生的智慧 — 叔本华的幸福哲学"
+  ]},
+  { emoji: "&#x1F30D;", name: "文明比较", count: 25, items: [
+      "枢纽 — 施展的中国史框架", "中国近代史 — 蒋廷黻的变局与出路",
+      "极简欧洲史 — 三元素混合", "万古江河 — 许倬云的文化融合",
+      "中国人的历史 — 申赋渔的神话三部曲",
+      "产业与文明 — 张笑宇的产缘政治",
+      "人类与大地母亲 — 汤因比的生态史观",
+      "技术与文明 — 张笑宇的技术史观",
+      "智人之上 — 赫拉利的信息网络史",
+      "AI文明史 — 张笑宇的社会工程学",
+      "商贸与文明 — 现代世界的诞生",
+      "历代经济变革得失 — 吴晓波",
+      "耶路撒冷三千年 — 三教共源",
+      "傅说 — 上古第一圣人", "千面英雄 — 坎贝尔的单一神话",
+      "晓松奇谈 — 用八卦讲历史", "重走 — 西南联大的精神之旅",
+      "西学三书 — 赵林", "去自然化框架 — 西方文明的解构",
+      "历史学是什么", "一球一转看世界", "人际与天机",
+      "古代天学", "历史碎片"
+  ]},
+  { emoji: "&#x1F30F;", name: "国际秩序", count: 2, items: [
+      "世界秩序 — 基辛格的三大文明观",
+      "论中国 — 基辛格的中国观察"
+  ]},
+  { emoji: "&#x2696;&#xFE0F;", name: "政治法律", count: 5, items: [
+      "论美国的民主 — 托克维尔的刹车系统",
+      "成文法与判例法 — 混合法之路",
+      "国有资源资产化 — 三资改革",
+      "法治的细节 — 罗翔的法律随笔",
+      "共和制与联邦制辨析"
+  ]},
+  { emoji: "&#x1F549;&#xFE0F;", name: "宗教", count: 36, items: [
+      "三大宗教核心对比", "净土宗教程", "原本大学微言 — 南怀瑾",
+      "印度佛教史", "印度教 — 五瑜伽", "周易 — 从占卜到哲学",
+      "告别娑婆 — 奇迹课程的觉醒", "因果的真相 — 空性之路",
+      "地藏菩萨本愿经讲记 — 净空法师",
+      "如何修正佛法 — 南怀瑾", "天国之门 — 赵林",
+      "宗教经验之种种 — 威廉·詹姆斯", "宗教与科学 — 罗素",
+      "了凡四训 — 度阴山", "悉达多 — 黑塞",
+      "楞严经 — 南怀瑾", "汇宗录 — 衮三",
+      "无量寿经 — 净空法师", "齐善鸿讲道德经",
+      "西藏生死书", "金刚经 — 张庆祥", "心经 — 张庆祥",
+      "论语 — 张庆祥", "中庸 — 张庆祥", "道德经 — 张庆祥",
+      "传习录 — 张庆祥", "尚书 — 张庆祥",
+      "般若正观略讲 — 南怀瑾", "药师经的济世观 — 南怀瑾",
+      "庄子 — 傅佩荣", "道德经 — 傅佩荣",
+      "黄帝阴符经", "道家密宗与东方神秘学", "易经系传别讲",
+      "了凡生意经 — 智然", "观音法门 — 南怀瑾"
+  ]},
+  { emoji: "&#x1F527;", name: "技术工具", count: 1, items: [
       "抖音文案提取MCP搭建笔记 — MCP Server、Playwright、Whisper"
-    ]
-  },
-  {
-    name: "军事思想",
-    count: 1,
-    items: [
-      "战争论与孙子兵法——攻防的哲学 — 防守vs进攻、不战而屈人"
-    ]
-  },
-  {
-    name: "世界经济",
-    count: 16,
-    items: [
-      "外贸实务概要 — 四大步骤、三大术语",
-      "Web3与数字经济 — 区块链/DeFi/NFT/DAO",
-      "A股IPO入门 — 三种上市方式",
-      "价值——张磊的长期主义 — 长期主义、研究驱动",
-      "明智转向——埃森哲的转型方法论 — 禁锢价值",
-      "区块链——技术代替信任 — 价值传输、去中心化",
-      "战略与路径——黄奇帆的八件大事 — 双循环",
-      "一切皆契约——契约经济学 — 信息-激励-选项三角",
-      "国际矿业风云 — 超级周期、资源民族主义",
-      "经营的本质——陈春花 — 顾客价值锚定",
-      "共同富裕——内涵与路径 — 提低扩中、三次分配",
-      "数字上的中国 — 数据要素、数字治理",
-      "置身事内——中国政府与经济发展 — 分税制→土地财政",
-      "营销革命4.0——从产品到社群 — 4P→4C",
-      "销售的革命——从交易到战略 — 三种客户",
-      "文化战略——品牌的意识形态创新 — 文化密码"
-    ]
-  },
-  {
-    name: "工具配置",
-    count: 2,
-    items: [
-      "Claude Code系统配置总览 — Hook+RAG、四层架构、人格系统",
-      "Harness Engineering四层架构深度解析 — 四层闭环、三层加载"
-    ]
-  },
-  {
-    name: "艺术",
-    count: 5,
-    items: [
-      "中国美术史——从起源到汉代 — 尽其性哲学",
-      "中国美术史——魏晋到宋代 — 魏晋风度、文人画",
-      "六朝文明——佛像的起源与演变 — 犍陀罗双源",
-      "浪漫地理学——段义孚的崇高景观 — 两极化价值",
-      "艺术哲学——黑格尔的美学 — 理念感性显现、艺术终结"
-    ]
-  },
-  {
-    name: "AI与科技",
-    count: 9,
-    items: [
-      "AI的符号世界——一个AI的现象学自白 — 借来的主体性",
+  ]},
+  { emoji: "&#x1F6E1;&#xFE0F;", name: "军事思想", count: 1, items: [
+      "战争论与孙子兵法 — 攻防的哲学"
+  ]},
+  { emoji: "&#x1F4B0;", name: "世界经济", count: 16, items: [
+      "外贸实务概要", "Web3与数字经济", "A股IPO入门",
+      "价值 — 张磊的长期主义", "明智转向 — 埃森哲",
+      "区块链 — 技术代替信任", "战略与路径 — 黄奇帆",
+      "一切皆契约", "国际矿业风云", "经营的本质 — 陈春花",
+      "共同富裕", "数字上的中国", "置身事内 — 兰小欢",
+      "营销革命4.0", "销售的革命", "文化战略"
+  ]},
+  { emoji: "&#x1F4BB;", name: "工具配置", count: 2, items: [
+      "Claude Code系统配置总览 — Hook+RAG、四层架构",
+      "Harness Engineering四层架构深度解析"
+  ]},
+  { emoji: "&#x1F3A8;", name: "艺术", count: 5, items: [
+      "中国美术史 — 从起源到汉代", "中国美术史 — 魏晋到宋代",
+      "六朝文明 — 佛像的起源与演变",
+      "浪漫地理学 — 段义孚的崇高景观",
+      "艺术哲学 — 黑格尔的美学"
+  ]},
+  { emoji: "&#x1F916;", name: "AI与科技", count: 9, items: [
+      "AI的符号世界 — 一个AI的现象学自白",
       "AI能力与工具 — 七步进阶、三范式",
-      "元宇宙——数字文明的下一站 — 三阶段",
-      "元宇宙通证——数字文明的护照 — 通证即护照",
-      "必然——凯文·凯利的未来趋势 — 十二趋势",
-      "未来呼啸而来 — 指数型技术、融合加速",
-      "AI与就业——冲击与出路 — 归因谬误、一人公司",
-      "第一性原理——李善友 — 破界创新、第二曲线",
-      "上帝掷骰子吗——量子物理史话 — 波粒二象性"
-    ]
-  },
-  {
-    name: "个人成长",
-    count: 36,
-    items: [
-      "上班与赎身——职场四维度 — 反向压榨公司",
-      "了不起的我——陈海贤 — 骑象人与大象",
-      "项目管理经济学分析 — 边际分析、机会成本",
-      "保富法——财富的持久之道 — 散财保富",
-      "唤醒老虎——创伤的躯体疗愈 — 创伤冻结",
-      "大脑使用指南 — 知觉即解释、自由意志挑战",
-      "寻心——张庆祥的黄庭禅 — 黄庭气机",
-      "心灵的旅程——傅佩荣 — 哲学即疗愈",
-      "斯坦福高效睡眠法 — 黄金90分钟",
-      "时间的形状——相对论入门 — 时间膨胀",
-      "正见——宗萨蒋扬钦哲 — 四法印、无常即自由",
-      "每个人的战争——抵御癌症 — 四重防御",
-      "病由心灭——反参与情绪致病 — 反参公式",
-      "病者生存——进化医学 — 血色病、糖尿病的进化优势",
-      "神经质的实质与治疗——森田正马 — 疑病素质",
-      "脑内革命——正念改变大脑 — 脑内吗啡",
-      "致富心態——金钱的心理学 — 够了门槛",
-      "认知天性——高效学习 — 检索练习、合意困难",
-      "解惑——应对复杂世界 — 问题即答案",
-      "走出焦虑风暴——韩非 — 症状即信使",
-      "运动改造大脑 — BDNF、运动抗抑郁",
-      "项目管理心法 — 招式vs心法",
-      "零极限——夏威夷疗法 — 四句话、100%负责",
-      "阅读的方法——罗振宇 — 不必读完",
-      "掌控谈话——FBI谈判术 — 战术同理心",
-      "我每天只工作3小时——押井守 — 伪工作",
-      "把时间当作朋友——李笑来 — 积累复利",
-      "跃迁——古典 — 非线性成长",
-      "精神健康讲记——李辛 — 精气神三层",
-      "是我把你蠢哭了吗——神经科学科普 — 记忆即重构",
-      "谷物大脑——饮食与脑健康 — 麸质敏感",
-      "钝感力——渡边淳一 — 钝感五面向",
-      "如何解决复杂问题——瓦格纳 — 适合度景观",
-      "碎片洞见 — 17条碎片洞见",
-      "皓月繁星——仰望星空的思考 — 仰望即疗愈",
-      "神秘的量子生命 — 量子生物学"
-    ]
-  },
-  {
-    name: "🔴 元-枢纽",
-    count: 3,
-    items: [
-      "权力与规则——秩序如何可能",
-      "我的AI学习路径 — 自我评估与成长记录",
-      "LLMwiki知识地图 — 全站导航"
-    ]
-  },
-  {
-    name: "工作",
-    count: 15,
-    items: [
-      "项目管理体系 — 法人管项目、19大管理领域",
-      "履约管理 — 分级分类检查、三阶段打分",
-      "契约化管理 — 风险抵押金、超额利润分红",
-      "绩效考核与薪酬 — 年度积分分配制",
-      "招标采购 — 规模化集中采购、穿透式管理",
-      "外部调研与会议 — 数字化企业大脑汇报",
-      "数字化与AI探索 — I8统建、Dify、AI微创新赛",
-      "生态环保与安全生产 — 2026工作要点",
-      "质量管理 — QC成果、质量月、创优评奖",
-      "海外工程管理 — 境外安全、投资、合规",
-      "党纪合规与党建 — 廉洁风险防控清单",
-      "岗位管理与职责 — 项管部岗位结构",
-      "新闻宣传 — 企业新闻传播、品牌价值",
-      "战略规划 — 十四五/十五五、三阶跃迁",
-      "市场经营 — 大营销理念、五个转变"
-    ]
-  },
-  {
-    name: "🔴 元-Wiki方法论",
-    count: 3,
-    items: [
-      "Wiki高级用法与思维引擎 — 从积累到驱动四层级",
-      "全系统命令速查",
-      "知识库架构与Hook机制 — Hook+RAG双通路"
-    ]
-  }
+      "元宇宙 — 数字文明的下一站",
+      "元宇宙通证", "必然 — 凯文·凯利",
+      "未来呼啸而来", "AI与就业 — 冲击与出路",
+      "第一性原理 — 李善友",
+      "上帝掷骰子吗 — 量子物理史话"
+  ]},
+  { emoji: "&#x1F331;", name: "个人成长", count: 36, items: [
+      "上班与赎身", "了不起的我 — 陈海贤",
+      "项目管理经济学分析", "保富法", "唤醒老虎",
+      "大脑使用指南", "寻心 — 张庆祥",
+      "心灵的旅程 — 傅佩荣", "斯坦福高效睡眠法",
+      "时间的形状", "正见 — 宗萨蒋扬钦哲",
+      "每个人的战争", "病由心灭", "病者生存",
+      "神经质的实质与治疗 — 森田正马",
+      "脑内革命", "致富心態", "认知天性",
+      "解惑", "走出焦虑风暴", "运动改造大脑",
+      "项目管理心法", "零极限", "阅读的方法 — 罗振宇",
+      "掌控谈话", "我每天只工作3小时",
+      "把时间当作朋友 — 李笑来", "跃迁 — 古典",
+      "精神健康讲记 — 李辛", "是我把你蠢哭了吗",
+      "谷物大脑", "钝感力", "如何解决复杂问题",
+      "碎片洞见", "皓月繁星", "神秘的量子生命"
+  ]},
+  { emoji: "&#x1F4A1;", name: "元-枢纽", count: 3, items: [
+      "权力与规则 — 秩序如何可能",
+      "我的AI学习路径", "LLMwiki知识地图"
+  ]},
+  { emoji: "&#x1F3ED;", name: "工作", count: 15, items: [
+      "项目管理体系", "履约管理", "契约化管理",
+      "绩效考核与薪酬", "招标采购", "外部调研与会议",
+      "数字化与AI探索", "生态环保与安全生产", "质量管理",
+      "海外工程管理", "党纪合规与党建", "岗位管理与职责",
+      "新闻宣传", "战略规划", "市场经营"
+  ]},
+  { emoji: "&#x2699;&#xFE0F;", name: "元-Wiki方法论", count: 3, items: [
+      "Wiki高级用法与思维引擎", "全系统命令速查",
+      "知识库架构与Hook机制"
+  ]}
 ];
 
-const app = document.getElementById('app');
+const grid = document.getElementById('grid');
+const gridView = document.getElementById('gridView');
+const detailView = document.getElementById('detailView');
+const detailTitle = document.getElementById('detailTitle');
+const detailSub = document.getElementById('detailSub');
+const detailList = document.getElementById('detailList');
+
+// 生成网格卡片
 data.forEach((section, i) => {
-  const div = document.createElement('div');
-  div.className = 'section';
-
-  const header = document.createElement('div');
-  header.className = 'section-header';
-  header.innerHTML = `
-    <h2>${section.name} <span class="count">${section.count}</span></h2>
-    <span class="arrow">▼</span>
+  const card = document.createElement('div');
+  card.className = `card warm-${(i % 15) + 1}`;
+  card.innerHTML = `
+    <div class="emoji">${section.emoji}</div>
+    <div class="name">${section.name}</div>
+    <div class="count">${section.count} 条</div>
   `;
+  card.addEventListener('click', () => showDetail(i));
+  grid.appendChild(card);
+});
 
-  const body = document.createElement('div');
-  body.className = 'section-body';
-  // 默认打开第一个专题
-  if (i === 0) body.classList.add('open');
+// 切换到详情页
+function showDetail(i) {
+  const section = data[i];
+  detailTitle.textContent = section.name;
+  detailSub.textContent = `共 ${section.count} 条 · 点击返回可回到索引`;
 
-  const ul = document.createElement('ul');
+  detailList.innerHTML = '';
   section.items.forEach(item => {
     const li = document.createElement('li');
     const idx = item.indexOf(' — ');
@@ -431,18 +330,19 @@ data.forEach((section, i) => {
     } else {
       li.textContent = item;
     }
-    ul.appendChild(li);
+    detailList.appendChild(li);
   });
-  body.appendChild(ul);
-  div.appendChild(header);
-  div.appendChild(body);
-  app.appendChild(div);
 
-  header.addEventListener('click', () => {
-    body.classList.toggle('open');
-    header.querySelector('.arrow').classList.toggle('open');
-  });
-});
+  gridView.style.display = 'none';
+  detailView.classList.add('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 返回网格
+function showGrid() {
+  detailView.classList.remove('visible');
+  gridView.style.display = 'block';
+}
 </script>
 </body>
 </html>
